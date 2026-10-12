@@ -75,6 +75,11 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                    <systemPropertyVariables>
+                        <!-- NIO selectors on Windows use AF_UNIX sockets in the temp dir; some machines
+                             block them in %TEMP% ("Unable to establish loopback connection"). -->
+                        <jdk.net.unixdomain.tmpdir>${project.build.directory}</jdk.net.unixdomain.tmpdir>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>

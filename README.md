@@ -29,8 +29,19 @@
 
 ## Запуск
 
-Появится в фазе 4:
+```bash
+./mvnw package -DskipTests
+java -jar server/target/server-0.1.0-SNAPSHOT.jar
+```
+
+Сервер слушает порт 8080: REST на `/api/games`, WebSocket (STOMP) на `/ws`, проверка состояния на `/actuator/health`. Протокол описан в [docs/PROTOCOL.md](docs/PROTOCOL.md).
+
+### Windows: «Unable to establish loopback connection»
+
+На некоторых машинах с Windows защитное ПО запрещает AF_UNIX-сокеты в `%TEMP%`, и Java не может открыть NIO-селектор. Из-за этого не стартуют Tomcat и HTTP-клиенты. Тесты Maven уже обходят это сами. Для ручного запуска укажите другой каталог:
 
 ```bash
-java -jar server/target/server-*.jar
+java -Djdk.net.unixdomain.tmpdir=server/target -jar server/target/server-0.1.0-SNAPSHOT.jar
 ```
+
+В IntelliJ IDEA добавьте то же свойство в VM options конфигурации запуска.

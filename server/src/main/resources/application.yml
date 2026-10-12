@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: machi-koro
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  port: 8080
+
+machikoro:
+  # Origins allowed to open the /ws endpoint in addition to the server's own origin
+  # (e.g. the Vite dev server).
+  allowed-origin-patterns: "http://localhost:*,http://127.0.0.1:*"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
