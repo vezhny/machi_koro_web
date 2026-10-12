@@ -3,6 +3,7 @@ package com.machikoro.server;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,6 +128,13 @@ class LobbyApiTest {
         assertError(post("/api/games", Map.of("name", "  "), null), HttpStatus.BAD_REQUEST, "BAD_REQUEST");
         assertError(post("/api/games", Map.of("name", "x".repeat(25)), null), HttpStatus.BAD_REQUEST, "BAD_REQUEST");
         assertError(post("/api/games", Map.of(), null), HttpStatus.BAD_REQUEST, "BAD_REQUEST");
+    }
+
+    @Test
+    void testDiceEndpointDoesNotExistWithoutProfile() {
+        ResponseEntity<JsonNode> response = post("/api/test/dice", Map.of("values", List.of(1)), null);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test

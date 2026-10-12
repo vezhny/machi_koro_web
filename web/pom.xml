@@ -16,11 +16,15 @@
 
     <properties>
         <node.version>v24.21.0</node.version>
+        <!-- `npm ci` wipes node_modules on every build, which fails while an IDE's TypeScript
+             language server keeps node_modules/.../tsc.exe open. Locally `install` is enough
+             (the lockfile is respected); CI passes -Dnpm.install=ci for clean installs. -->
+        <npm.install>install</npm.install>
     </properties>
 
     <build>
         <plugins>
-            <!-- Downloads Node into web/node (git-ignored), then `npm ci` and `npm run build`.
+            <!-- Downloads Node into web/node (git-ignored), then `npm install|ci` and `npm run build`.
                  Vite writes straight into target/classes/static, so the jar serves it as /static.
                  Skip with -Dskip.npm -Dskip.installnodenpm when the frontend has not changed. -->
             <plugin>
@@ -37,12 +41,12 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>npm-ci</id>
+                        <id>npm-install</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>ci --no-audit --no-fund</arguments>
+                            <arguments>${npm.install} --no-audit --no-fund</arguments>
                         </configuration>
                     </execution>
                     <execution>

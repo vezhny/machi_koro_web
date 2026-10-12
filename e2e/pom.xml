@@ -12,5 +12,77 @@
 
     <artifactId>e2e</artifactId>
     <name>Machi Koro :: E2E</name>
-    <description>End-to-end browser tests. Enabled only with -Pe2e.</description>
+    <description>
+        End-to-end browser tests (Playwright). Enabled only with -Pe2e; runs the packaged server jar,
+        so build from the repository root: ./mvnw verify -Pe2e
+    </description>
+
+    <properties>
+        <e2e.server.jar>${project.basedir}/../server/target/server-${project.version}.jar</e2e.server.jar>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.microsoft.playwright</groupId>
+            <artifactId>playwright</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Only Chromium is needed; the tests themselves never download browsers. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>install-chromium</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${java.home}/bin/java</executable>
+                            <classpathScope>test</classpathScope>
+                            <arguments>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>com.microsoft.playwright.CLI</argument>
+                                <argument>install</argument>
+                                <argument>chromium</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <systemPropertyVariables>
+                        <e2e.server.jar>${e2e.server.jar}</e2e.server.jar>
+                        <e2e.work.dir>${project.build.directory}</e2e.work.dir>
+                        <jdk.net.unixdomain.tmpdir>${project.build.directory}</jdk.net.unixdomain.tmpdir>
+                    </systemPropertyVariables>
+                    <environmentVariables>
+                        <PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD>1</PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD>
+                    </environmentVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
