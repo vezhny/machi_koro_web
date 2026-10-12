@@ -24,6 +24,18 @@ class RandomSourceTest {
     }
 
     @Test
+    void seededSourceIsReproducible() {
+        SeededRandomSource first = new SeededRandomSource(99L);
+        SeededRandomSource second = new SeededRandomSource(99L);
+
+        assertThat(first.seed()).isEqualTo(99L);
+        for (int i = 0; i < 100; i++) {
+            int value = first.rollDie();
+            assertThat(value).isBetween(1, 6).isEqualTo(second.rollDie());
+        }
+    }
+
+    @Test
     void fixedSourceReturnsValuesInOrder() {
         FixedRandomSource source = new FixedRandomSource(3, 6, 1);
 
