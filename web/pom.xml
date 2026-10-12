@@ -12,5 +12,51 @@
 
     <artifactId>web</artifactId>
     <name>Machi Koro :: Web</name>
-    <description>Browser client (Vite + TypeScript), packaged as static resources.</description>
+    <description>Browser client (Vite + TypeScript), packaged as /static resources for the server jar.</description>
+
+    <properties>
+        <node.version>v24.21.0</node.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <!-- Downloads Node into web/node (git-ignored), then `npm ci` and `npm run build`.
+                 Vite writes straight into target/classes/static, so the jar serves it as /static.
+                 Skip with -Dskip.npm -Dskip.installnodenpm when the frontend has not changed. -->
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>install-node-and-npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>${node.version}</nodeVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm-ci</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>ci --no-audit --no-fund</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm-build</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
