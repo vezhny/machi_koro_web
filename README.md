@@ -62,6 +62,18 @@ npm run dev
 
 Затем откройте http://localhost:5173.
 
+### Docker
+
+```bash
+docker compose up --build
+```
+
+Образ собирается в два этапа. Сначала `./mvnw package` в `eclipse-temurin:21-jdk` (тесты на этом этапе не запускаются, ими занимается CI), затем jar копируется в `eclipse-temurin:21-jre` и запускается от непривилегированного пользователя. Приложение доступно на http://localhost:8080. Параметры JVM задаются переменной `JAVA_OPTS`.
+
+### CI
+
+[GitHub Actions](.github/workflows/ci.yml): на каждый push выполняется `./mvnw verify`, на каждый pull request — `./mvnw verify -Pe2e`. При падении отчёты тестов и лог сервера e2e сохраняются как артефакты.
+
 ### Windows: «Unable to establish loopback connection»
 
 На некоторых машинах с Windows защитное ПО запрещает AF_UNIX-сокеты в `%TEMP%`, и Java не может открыть NIO-селектор. Из-за этого не стартуют Tomcat и HTTP-клиенты. Тесты Maven уже обходят это сами. Для ручного запуска укажите другой каталог:
