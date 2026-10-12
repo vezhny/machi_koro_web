@@ -34,7 +34,23 @@
 java -jar server/target/server-0.1.0-SNAPSHOT.jar
 ```
 
-Сервер слушает порт 8080: REST на `/api/games`, WebSocket (STOMP) на `/ws`, проверка состояния на `/actuator/health`. Протокол описан в [docs/PROTOCOL.md](docs/PROTOCOL.md).
+Откройте http://localhost:8080, создайте партию и отправьте ссылку (или 6-значный код) остальным игрокам. Играть можно и с двух вкладок одного браузера: каждая вкладка помнит своё место.
+
+Сервер слушает порт 8080: фронт на `/`, REST на `/api/games`, WebSocket (STOMP) на `/ws`, проверка состояния на `/actuator/health`. Протокол описан в [docs/PROTOCOL.md](docs/PROTOCOL.md).
+
+### Разработка фронта
+
+Модуль `web` собирается из Maven: `frontend-maven-plugin` скачивает Node в `web/node`, затем выполняет `npm ci` и `npm run build`. Чтобы пересобрать только бэкенд без фронта, добавьте `-Dskip.npm -Dskip.installnodenpm`.
+
+Для живой перезагрузки запустите сервер, как описано выше, и Vite dev server. Vite проксирует `/api` и `/ws` на `:8080`:
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+Затем откройте http://localhost:5173.
 
 ### Windows: «Unable to establish loopback connection»
 
