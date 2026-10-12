@@ -25,6 +25,16 @@
 ./mvnw verify -Pe2e    # то же самое плюс сквозные тесты
 ```
 
+### Сквозные тесты (`-Pe2e`)
+
+Модуль `e2e` запускает собранный jar сервера на свободном порту с профилем `test-dice` и играет через Chromium (Playwright for Java) за двух игроков в изолированных контекстах браузера. Chromium скачивается при первом запуске в кеш Playwright (`%LOCALAPPDATA%\ms-playwright` или `~/.cache/ms-playwright`).
+
+- Запускать из корня репозитория: e2e использует `server/target/server-*.jar` из той же сборки.
+- `-De2e.headed=true` открывает видимый браузер.
+- Лог сервера пишется в `e2e/target/e2e-server.log`.
+
+Профиль `test-dice` нужен только для тестов. Он добавляет эндпоинт `POST /api/test/dice` с телом `{"values":[3,4]}`: переданные значения выпадут в следующих бросках. Без этого профиля эндпоинта нет.
+
 На Windows используйте `mvnw.cmd` вместо `./mvnw`.
 
 ## Запуск
@@ -40,7 +50,7 @@ java -jar server/target/server-0.1.0-SNAPSHOT.jar
 
 ### Разработка фронта
 
-Модуль `web` собирается из Maven: `frontend-maven-plugin` скачивает Node в `web/node`, затем выполняет `npm ci` и `npm run build`. Чтобы пересобрать только бэкенд без фронта, добавьте `-Dskip.npm -Dskip.installnodenpm`.
+Модуль `web` собирается из Maven: `frontend-maven-plugin` скачивает Node в `web/node`, затем выполняет `npm install` и `npm run build`. Для чистой установки (в CI) добавьте `-Dnpm.install=ci`. Локально это может не сработать, пока IDE держит открытым `node_modules/.../tsc.exe`. Чтобы пересобрать только бэкенд без фронта, добавьте `-Dskip.npm -Dskip.installnodenpm`.
 
 Для живой перезагрузки запустите сервер, как описано выше, и Vite dev server. Vite проксирует `/api` и `/ws` на `:8080`:
 

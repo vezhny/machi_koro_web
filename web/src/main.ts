@@ -18,6 +18,7 @@ import { homeView, lobbyListView, pickSeatView, tableView, waitingRoomView } fro
 
 const LOBBY_POLL_MS = 5000;
 const TOAST_MS = 4000;
+const RESYNC_ON = new Set(['STALE_VERSION', 'NOT_YOUR_TURN', 'WRONG_PHASE']);
 
 const root = document.getElementById('app')!;
 const toastElement = document.getElementById('toast')!;
@@ -141,7 +142,8 @@ function enterGame(seat: Seat): void {
     onError: (error) => {
       if (screen !== game) return;
       toast(errorText(error));
-      if (error.code === 'STALE_VERSION') void resync(game);
+      // These mean the screen shows an outdated state (e.g. a missed broadcast): refresh it.
+      if (RESYNC_ON.has(error.code)) void resync(game);
     },
     onConnected: () => {
       if (screen !== game) return;
