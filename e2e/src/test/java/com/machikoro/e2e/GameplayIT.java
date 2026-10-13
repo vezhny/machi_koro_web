@@ -70,18 +70,26 @@ class GameplayIT extends E2ETestBase {
         bob.rollOneDie();
         assertThat(bob.button("Ничего не строить")).isVisible();
 
+        // Stays muted until the error has been checked: the route handler runs whenever Playwright
+        // next processes events, so unmuting earlier could still deliver the broadcast of Bob's pass.
+        // Errors (/user/queue/errors) are never muted.
         muteBob.set(true);
         bob.pass();
         assertThat(alice.status()).containsText("Ваш ход — бросок кубиков");
         assertThat(bob.button("Ничего не строить")).isVisible();
-        muteBob.set(false);
 
         bob.pass();
 
         assertThat(bob.toast()).hasText("Сейчас не ваш ход");
+        // The error makes the client refetch the state over REST, so it recovers even while muted.
         assertThat(bob.status()).containsText("Ходит Alice — бросок кубиков");
         assertThat(alice.toast()).isEmpty();
         assertThat(alice.status()).containsText("Ваш ход — бросок кубиков");
+
+        muteBob.set(false);
+        server.pushDice(6);
+        alice.rollOneDie();
+        assertThat(bob.status()).containsText("Ходит Alice — стройка");
     }
 
     @Test

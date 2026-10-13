@@ -41,7 +41,7 @@
 
 ```bash
 ./mvnw package -DskipTests
-java -jar server/target/server-0.1.0-SNAPSHOT.jar
+java -jar server/target/server-1.0.0.jar
 ```
 
 Откройте http://localhost:8080, создайте партию и отправьте ссылку (или 6-значный код) остальным игрокам. Играть можно и с двух вкладок одного браузера: каждая вкладка помнит своё место.
@@ -79,7 +79,7 @@ docker compose up --build
 На некоторых машинах с Windows защитное ПО запрещает AF_UNIX-сокеты в `%TEMP%`, и Java не может открыть NIO-селектор. Из-за этого не стартуют Tomcat и HTTP-клиенты. Тесты Maven уже обходят это сами. Для ручного запуска укажите другой каталог:
 
 ```bash
-java -Djdk.net.unixdomain.tmpdir=server/target -jar server/target/server-0.1.0-SNAPSHOT.jar
+java -Djdk.net.unixdomain.tmpdir=server/target -jar server/target/server-1.0.0.jar
 ```
 
 В IntelliJ IDEA добавьте то же свойство в VM options конфигурации запуска.
