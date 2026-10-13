@@ -19,6 +19,9 @@
 
     <properties>
         <e2e.server.jar>${project.basedir}/../server/target/server-${project.version}.jar</e2e.server.jar>
+        <!-- Arguments of `playwright install`. CI on Linux adds the with-deps flag to also get the
+             system libraries Chromium needs; see .github/workflows/ci.yml. -->
+        <playwright.install.args>chromium</playwright.install.args>
     </properties>
 
     <dependencies>
@@ -50,13 +53,7 @@
                         <configuration>
                             <executable>${java.home}/bin/java</executable>
                             <classpathScope>test</classpathScope>
-                            <arguments>
-                                <argument>-classpath</argument>
-                                <classpath/>
-                                <argument>com.microsoft.playwright.CLI</argument>
-                                <argument>install</argument>
-                                <argument>chromium</argument>
-                            </arguments>
+                            <commandlineArgs>-classpath %classpath com.microsoft.playwright.CLI install ${playwright.install.args}</commandlineArgs>
                         </configuration>
                     </execution>
                 </executions>
